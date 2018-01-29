@@ -1,0 +1,3 @@
+[submodule "SynthDefs-for-Patterns"]
+	path = SynthDefs-for-Patterns
+	url = https://github.com/brunoruviaro/SynthDefs-for-Patterns.git
