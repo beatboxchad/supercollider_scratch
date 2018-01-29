@@ -1,3 +1,6 @@
 [submodule "SynthDefs-for-Patterns"]
 	path = SynthDefs-for-Patterns
 	url = https://github.com/brunoruviaro/SynthDefs-for-Patterns.git
+[submodule "dxkSynthDefs"]
+	path = dxkSynthDefs
+	url = https://github.com/derekxkwan/dxkSynthDefs.git
