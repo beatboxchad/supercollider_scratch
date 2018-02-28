@@ -1,4 +1,33 @@
 (
+SynthDef(\coreyDesyp, {|gate = 1, freq = 440, att = 0.001, dec = 0.001, sus = 0.75, rel = 0.125, lfofreq = 3, lopfreq = 800, rq = 0.5,
+        detune1 = 12, detune2 = 8, amp = 1, pan = 0, out = 0|
+        var env = EnvGen.ar(Env.adsr(att, dec, sus, rel, amp), gate, doneAction:2);
+        var nvoices1 = 5, nvoices2 = 7;
+
+        var osc1 = {
+                var m = 2**(detune1/1200).rand2;
+                var lfo = SinOsc.ar(lfofreq.rand).range(0,1);
+                DelayC.ar(LFSaw.ar(m * freq/2), 0.02, freq.reciprocal.rand * lfo);
+        }.dup(nvoices1);
+
+        var osc2 = {
+                var m = 2**(detune2/1200).rand2;
+                var lfo = SinOsc.ar(lfofreq.rand).range(0,1);
+                DelayC.ar(LFSaw.ar(m * freq), 0.02, freq.reciprocal.rand * lfo);
+        }.dup(nvoices2);
+
+        var output = BLowPass4.ar(osc1, lopfreq, rq) + osc2 / 4;
+        output = Pan2.ar(output*env, pan);
+        Out.ar(out, output);
+}).add;
+
+
+SynthDef(\grain, { |out=0, freq=300, amp=0.3|
+    OffsetOut.ar(out, Pulse.ar(freq) * EnvGen.kr(Env.perc, doneAction: 2) * amp)
+}).add;
+)
+
+(
 SynthDef(\bass, { |out, freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 1100, width = 0.15,
         detune = 1.005, preamp = 4|
     var    sig,

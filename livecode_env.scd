@@ -1,0 +1,1 @@
+"./SynthDefs-for-Patterns/all.scd".loadPath

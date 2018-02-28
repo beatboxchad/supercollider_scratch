@@ -1,6 +1,4 @@
-// Example
-(
-Ndef(\hihats, Pbind(
+Ndef(\hihat, Pbind(
 	\instrument, "hihat",
 	\dur, Pseq([Rest(1/4), 1/4], inf),
 	\att, 0.01,
@@ -8,10 +6,10 @@ Ndef(\hihats, Pbind(
 	\ffreq, 11000,
 	\pan, 0,
 	\amp, 0.3
-).play;
+)
 
 
-Pbind(
+Ndef(kicks, Pbind(
 	\instrument, "kick",
 	\dur, 1/2,
 	\att, 0.01,
@@ -144,19 +142,19 @@ TempoClock.default.tempo = 132/60;
 Ndef(\phat_basslines, Pseq([
     Pbind(            // repeated notes
         \instrument, \bass,
-        \midinote, 36,
-        \dur, Pseq([0.75, 0.25, 0.25, 0.25, 0.25], 1),
+        \midinote, Scale.dorian.degrees + 30,
+        \dur, Pseq([0.75, 0.25, 0.25, 0.25, 0.025], 1),
         \legato, Pseq([0.9, 0.3, 0.3, 0.3, 0.3], 1),
         \amp, 0.5, \detune, 1.005
     ),
     Pbind(\instrument, \bass,        // octave jump
         \midinote, Pseq([36, 48, 36], 1),
-        \dur, Pseq([0.25, 0.25, 0.5], 1),
+        \dur, Pseq([0.25, 0.25, 0.25], 1),
         \amp, 0.5, \detune, 1.005
     ),
     Pmono(\bass,        // diminished triad
         \midinote, Pseq([36, 39, 36, 42], 1),
-        \dur, Pseq([0.25, 0.5, 0.25, 0.5], 1),
+        \dur, Pseq([0.25, 0.25, 0.25, 0.25], 1),
         \amp, 0.5, \detune, 1.005
     )
 
