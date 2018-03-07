@@ -4,6 +4,6 @@ Ndef(\ctl_2, {MouseY.kr(440, 1200)});
 
 Ndef(\MouseX, {MouseX.kr(0.01, 3)})
 
-Ndef(\MouseY, {MouseY.kr(0.01, 1.1)})
+Ndef(\MouseY, {MouseY.kr(0.01, 1.01)})
 
 Ndef(\maus, { MouseX.kr });

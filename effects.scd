@@ -35,10 +35,10 @@
 ~gardendelay = {
 	arg speed, feedback;
 	var input, fBLoopIn, fBLoopOut, processing;
-	input = \in.ar(0);
+	input = \in.ar(0) * 0.25;
 	fBLoopIn = LocalIn.ar(1);
 	processing = LeakDC.ar((DelayC.ar(fBLoopIn, 3.5, speed, feedback)));
-	processing = PitchShift.ar(processing, 0.2, 1 - (SinOsc.kr(speed*4, 0, 0.0)));
+	processing = PitchShift.ar(processing, 0.2, 1 - (SinOsc.kr(speed*4, 0, 0.03)));
 	processing = RHPF.ar(processing,200,0.8);
 	fBLoopOut = LocalOut.ar(input + processing);
 	input + processing
@@ -87,7 +87,7 @@ Ndef(\delay).play
         ratio = note.midicps / pitch;
         sig = PitchShift.ar(in, pitchRatio: ratio);
 		sig * amp * env;
-	}
+}
 
 )
 

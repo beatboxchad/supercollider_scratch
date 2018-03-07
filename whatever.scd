@@ -1,21 +1,32 @@
 
 Ndef(\sound, { arg freq; SinOsc.ar(freq * [1, 1.2], \phase.ar([0, 0]))  });
-Ndef(\voice, {SoundIn.ar(1)})
+Ndef(\ryan, {SoundIn.ar(1)})
+Ndef(\scott, {SoundIn.ar(0)});
+
 Ndef(\sound).map(\freq, Ndef(\ctl_2))
 Ndef(\sound).fadeTime = 0.2;
 
-Ndef(\bianca, {SoundIn.ar(0)});
-Ndef(\bianca).play
+Ndef(\scott).play
+Ndef(\ryan)
 (
 Ndef(\gardendelay, ~gardendelay);
 Ndef(\gardendelay).map(\speed, Ndef(\MouseX));
 Ndef(\gardendelay).map(\feedback, Ndef(\MouseY));
+
+Ndef(\scottdelay, ~gardendelay);
+Ndef(\scottdelay).map(\speed, Ndef(\MouseX));
+Ndef(\scottdelay).map(\feedback, Ndef(\MouseY));
+
+
 )
 Ndef(\volume, {arg level; \in.ar(0) * level})
 Ndef(\volume).map(\level, Ndef(\maus))
 Ndef.clear(3);
 Ndef(\voice) <>> Ndef(\gardendelay)
-Ndef(\voice) <>> Ndef(\octave) <>> Ndef(\gardendelay)
+Ndef(\) <>> Ndef(\octave) <>> Ndef(\gardendelay)
+
+Ndef(\scottdelay).play
+Ndef(\scott) <>> Ndef(\scottdelay);
 
 Ndef(\voice).stop
 
