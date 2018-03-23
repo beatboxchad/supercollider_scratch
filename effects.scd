@@ -35,114 +35,67 @@
 ~gardendelay = {
 	arg speed, feedback;
 	var input, fBLoopIn, fBLoopOut, processing;
-	input = \in.ar(0) * 0.25;
+	input = \in.ar(1);
 	fBLoopIn = LocalIn.ar(1);
 	processing = LeakDC.ar((DelayC.ar(fBLoopIn, 3.5, speed, feedback)));
 	processing = PitchShift.ar(processing, 0.2, 1 - (SinOsc.kr(speed*4, 0, 0.03)));
 	processing = RHPF.ar(processing,200,0.8);
 	fBLoopOut = LocalOut.ar(input + processing);
-	input + processing
+	processing + input
 };
 
 )
+Ndef(\out, {})
+Ndef(\out).play([0,1])
+Ndef(\out).clear
+Ndef(\delay, ~gardendelay)
+s.stopRecording
+Ndef(\delay).play(0, 2)
+Ndef(\delay).stop
 
+Ndef(\delay).clear
 (
 ~octaver = {// TODO make this polyphonic
 	arg ratio = -1;
 	var input, processing;
 	input = \in.ar();
-	processing = PitchShift.ar(input, 0.5, ratio) * 1.2;
+	processing = PitchShift.ar(input, 0.25, ratio);
 	input + processing;
 }
 )
-~voxOctave.free
 
-CmdPeriod.run
 (
-Ndef(\vox, {var input = SinOsc.ar(440);
-	input
+~harmFollow = {
+	arg kbus;
+	var input, ksig, ratio, processing;
+	input = \in.ar();
+	ksig = SoundIn.ar(kbus);
+	ratio = Tartini.kr(ksig) - Tartini.kr(input) % 1; // FIXME coerce this to positive
+	processing = PitchShift.ar(input, 0.25, ratio);
+	input + processing;
 }
 )
-)
-
-Ndef(\vox)
-
-Ndef(\delay, ~gardendelay)
-
-Ndef(\delay).play
-
-Ndef(\vox).stop
-Ndef(\delay) <<>.in Ndef(\vox)
-Ndef(\delay).play
-
 (
-	~harmonizer = {
-	//(definst harmonize-input
-		arg note=60, gate = 1, bus = 1;
-		var in, haspitch, pitch, amp, env, ratio, sig;
-		in = SoundIn.ar(bus);
-        # pitch, haspitch = Tartini.kr(in);
-        amp = Amplitude.kr(in);
-        env = EnvGen.kr(Env.adsr(0.01, 0.1, 1, 0.3), gate, doneAction: 2);
-        ratio = note.midicps / pitch;
-        sig = PitchShift.ar(in, pitchRatio: ratio);
-		sig * amp * env;
+~ratio = {
+	arg control, sig;
+	var cpitch, spitch, ratio;
+	cpitch = Tartini.kr(control);
+	spitch = Tartini.kr(sig);
+	ratio = spitch - cpitch % 1;
+	ratio;
 }
-
 )
-
-CmdPeriod.run
-
-//freddie freeloader on trumpetx
-
-s.reboot
-MIDIClient.init
-MIDIIn.connectAll
-~g = NPVoicer(Ndef(\harmonize));     // make an NPVoicer with an Ndef in it
-~g.prime(~harmonizer);            // prepare it with the default synthdef
-
-~g.play();                    // play it
-
-~g.releaseAll()
-~g.proxy <<>.in Ndef(\delay)
-    // start a sound with key 48, with its won set of params
-~g.put(48, [\note, 48, \bus, 0, \gate, 0]);
-
-    // a second note at 51
-~g.put(51, [\freq, 51.midicps]);
-
-    // release them
-~g.release(50);
-~g.release(45);
-~g.release();
-s.latency = nil
-// test with MIDI if you have a controller around:
-MIDIdef.noteOn(\harmonizerOn, {arg vel, note, chan;  ~g.put(note, [\note, note, \bus, 1, \gate, 1])})
-MIDIdef.noteOff(\harmonizerOff, {arg vel, note, chan;  ~g.put(note, [\gate, 0])})
-MIDIdef.noteOff(\harmoniz, { arg vel, note, chan; ~g.release(note)});
-MIDIdef.noteOn(\test4, {arg vel, note,  chan; note.postln}); // match any noteOn
-MIDIdef.noteOff(\test4, {arg vel, note, chan; ("Note Off: " + note).postln})
-MIDIdef.freeAll
-
 
 
 (
-s.latency = nil;
-g = NPVoicer(Ndef(\x));
-g.prime({ |freq = 400| SinOsc.ar(freq) * EnvGen.ar(Env.perc(0.001, 0.03, 0.4), doneAction:2) }, true);
-g.play;
+~infHoldVerb = {
+	arg feedback = 1;
+	var input, processing;
+	input = \in.ar(0);
+	processing = LocalIn.ar(2)+input.dup;
+	15.do{processing = AllpassN.ar(processing, 0.06, Rand(0.001, 0.04), 3)};
+	LocalOut.ar(input + processing * feedback);
+	input + processing
 
-
+}
 )
-
-Ndef(\room, {SoundIn.ar(0)});
-
-Ndef(\delay, ~gardendelay);
-
-
-Ndef(\delay).map(\speed, Ndef(\MouseX))
-Ndef(\delnay).map(\feedback, Ndef(\MouseY))
-
-Ndef(\room) <<>.in Ndef(\delay)
-
-Ndef(\delay).stop

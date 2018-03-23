@@ -4,6 +4,10 @@ Ndef(\ctl_2, {MouseY.kr(440, 1200)});
 
 Ndef(\MouseX, {MouseX.kr(0.01, 3)})
 
-Ndef(\MouseY, {MouseY.kr(0.01, 1.01)})
+Ndef(\MouseY, {MouseY.kr(0.00001, 1.01)})
 
 Ndef(\maus, { MouseX.kr });
+
+Ndef(\pitch, {arg kbus; Tartini.kr(SoundIn.ar(kbus));})
+
+Ndef(\ratio)
