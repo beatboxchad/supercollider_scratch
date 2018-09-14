@@ -1,11 +1,28 @@
 (
 p.clock.tempo = 2.2;
-~k = Pbind(\instrument,\bplay,\buf,d["k"][1],\dur,Pdef(\kd),\amp,1);
-~sn = Pbind(\instrument,\bplay,\buf,d["s"][1],\dur,Pdef(\snd),\amp,1);
-~h = Pbind(\instrument,\bplay,\buf,d["ch"][1],\dur,Pdef(\hd),\amp,1);
-~t = Pbind(\instrument,\bplay,\buf,d["t"][0],\dur,Pdef(\td),\amp,1);
-~t.play
+~k = Pbind(\instrument,\bplay,\buf,d["k"][0],\dur,Pbjorklund2(Pkr(~kl), Pkr(~kh))/4,\amp,1);
+~sn = Pbind(\instrument,\bplay,\buf,d["s"][4],\dur,Pbjorklund2(Pkr(~sl), Pkr(~sh))/4,\amp,1);
+~h = Pbind(\instrument,\bplay,\buf,d["ch"][0],\dur,Pbjorklund2(Pkr(~hl), Pkr(~hh))/4,\amp,1);
+~t = Pbind(\instrument,\bplay,\buf,d["t"][2],\dur,Pbjorklund2(Pkr(~tl), Pkr(~th))/4,\amp,1);
+~k.play;
+~sn.play;
+~h.play;
+~t.play;
 )
+~kl = {arg a=4; a};
+~kh = {arg a=4; a};
+
+~sl = {arg a=4; a};
+~sh = {arg a=4; a};
+
+~tl = {arg a=4; a};
+~th = {arg a=4; a};
+
+~hl = {arg a=4; a};
+~hh = {arg a=4; a};
+
+~tl.set(\a, 4)
+~th.set(\a, 12)
 ~a =  { |freq = 440, dt=0.1, rate=2| Ringz.ar(Impulse.ar(rate * [1, 1.2]), freq, dt)*0.1 };
 (
 ~a[1] = \xset -> Pbind(
@@ -16,32 +33,19 @@ p.clock.tempo = 2.2;
 );
 )
 ~a.fadeTime = 2
-~a = { |freq = 440, dt=0.1, rate=2| Ringz.ar(Dust.ar(rate * 10.dup), freq, dt)*0.1 };
+~a = { |freq = 440	, dt=0.1, rate=2| Ringz.ar(Dust.ar(rate * 10.dup), freq, dt)*0.1 };
 
-~a[10] = \filter -> {~delay}
+~a[10] = \filter -> e[\gardendelay]
 
 
-~delay.play([0,1])
 ~a.play
 
 ~delay.set(\feedback, 1)
 
 Ndef(\decim).play([0,1])
-~k<>> Ndef(\gardendelay).play([0,1])
-Ndef(\gardendelay).set(\speed, 0.01)
-Ndef(\gardendelay).set(\feedback, 1.5)
-Ndef(\gardendelay).set(\pitchspeed, 240)
-Ndef(\gardendelay).set(\pitchdepth, 08.1)
-Ndef(\gardendelay).play
-~sn.stop
-~sn <>> Ndef(\decim)
-~k <>> Ndef(\decim)
-Ndef(\decim).set(\rate, 4000)
-Ndef(\decim).play([0,1])
-Ndef(\decim).stop
 ~t.play
 ~t[10] = \filter -> {|in| Decimator.ar(in, 3000)}
-Pdef(\kd, Pbjorklund2(9,26)/4)
+~dt = Pdef(\dt, Pbjorklund(9,26)/4)
 Pdef(\snd, Pbjorklund2(14,25)/2)
 Pdef(\hd, Pbjorklund2(4,27)/4)
 Pdef(\td, Pbjorklund2(8,28)/4)
