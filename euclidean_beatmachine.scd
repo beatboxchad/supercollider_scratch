@@ -1,32 +1,61 @@
 (
-~kl = {arg a=4; a};
-~kh = {arg a=4; a};
-~kg = {arg a=4; a};
 
-~sl = {arg a=4; a};
-~sh = {arg a=4; a};
-~sg = {arg a=4; a};
 
-~tl = {arg a=4; a};
-~th = {arg a=4; a};
-~tg = {arg a=4; a};
 
-~hl = {arg a=4; a};
-~hh = {arg a=4; a};
-~hg = {arg a=4; a};
-p.clock.tempo = 2.2;
-~k = Pbind(\instrument,\bplay,\buf,d["k"][0],\dur, Pdefn(\k),\amp,1);
-~sn = Pbind(\instrument,\bplay,\buf,d["s"][0],\dur,Pdefn(\s),\amp,1);
-~h = Pbind(\instrument,\bplay,\buf,d["ch"][2],\dur,Pdefn(\h),\amp,1);
-~t = Pbind(\instrument,\bplay,\buf,d["t"][0],\dur,Pdefn(\t),\amp,1);
+[\kick, \snare, \tom, \hat].do {|pattern|
+	Pdefn(pattern).quant = 0.25;
+	Pbindef(pattern).quant = 0.25;
+};
+g = Dictionary();
+
+g[\emcontrols] = ();
+
+g[\emcontrols][\setSource] = {
+	arg drum;
+	Pdefn(drum).source = {
+		Pbjorklund2(
+			g[\emcontrols][drum][\hits],
+			g[\emcontrols][drum][\length]) /
+		g[\emcontrols][drum][\divisor];
+	};
+};
+g[\emcontrols][\trig] = {
+	arg drum;
+	Pdefn(drum).source = {
+		Pbjorklund2(
+			g[\emcontrols][drum][\hits],
+			g[\emcontrols][drum][\length]) /
+		g[\emcontrols][drum][\divisor];
+	};
+};
+
+Pbindef(\snare)
+[\kick, \snare, \hat, \tom].do {|drum, i|
+	g[\emcontrols][drum] = (
+		hits: 4,
+		length: 4,
+		divisor: 4
+	);
+
+	g[\emcontrols][drum][\setSource].(drum);
+};
+
+~k = Pbindef(\kick, \instrument, \bplay,\buf,d["k"][0],\dur, Pdefn(\kick),\amp,0.2);
+~k.play
+~k.quant = 0.25
+~sn.quant = 0.25
+~sn[0]  = Pbindef(\snare, \instrument,\bplay,\buf,d["s"][0],\dur,Pdefn(\snare),\amp,0.2);
+~h = Pbindef(\hat, \instrument,\bplay,\buf,d["ch"][2],\dur,Pdefn(\hat),\amp,0.3);
+~t = Pbindef(\tom, \instrument,\bplay,\buf,d["t"][0],\dur,Pdefn(\tom),\amp,0.2);
 ~k.play;
 ~sn.play;
 ~h.play;
 ~t.play;
-~k[10] = \filter -> {|in| Decimator.ar(in, bits: 6)};
-~s[10] = \filter -> {|in| Decimator.ar(in, bits: 6)};
-~t[10] = \filter -> {|in| Decimator.ar(in, bits: 6)};
-~h[10] = \filter -> {|in| Decimator.ar(in, bits: 6)};
+~k[10] = \filter -> {|in| Decimator.ar(in, bits: 4)};
+~sn[10] = \filter -> {|in| Decimator.ar(in, bits: 4)};
+~t[10] = \filter -> {|in| Decimator.ar(in, bits: 4)};
+~h[10] = \filter -> {|in| Decimator.ar(in, bits: 4)};
+[~k, ~sn, ~t, ~h].do {|moo| moo[10] = nil}
 )
 
 ~tl.set(\a, 0)
@@ -72,10 +101,14 @@ e[\vibrato]= {
 ~vibrato.controlKeys
 ~a.play([0,1])
 ~a.set(~a.controlNames[0], 4)
-~vibrato1 = ~vibrato.copy()
+
 ~vibrato.play([0, 1])
 ~mic.stop
 ~mic <>> ~vibrato
 e = Dictionary()
 
 ~mic[10] = \filter -> e[\vibrato]
+
+(1..50).collect {|i|
+	~guitar[i] =nil
+}

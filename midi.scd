@@ -1,63 +1,34 @@
+(
+// rate controls
+c = MKtl(\akai, "*lpd8");
+[\kick, \snare, \hat, \tom].do {|drum, i|
 
+	c.elAt(\kn0, i).action = {
+		arg el;
+		var length = g[\emcontrols][drum][\length];
 
+		g[\emcontrols][drum][\hits] = el.value.linexp(
+			0, 1, 1, length).round;
+
+		g[\emcontrols][\setSource].(drum);
+	};
+
+	c.elAt(\kn0, i + 4).action = {
+		arg el;
+		g[\emcontrols][drum][\length] = el.value.linexp(0, 1, 1, 50);
+		g[\emcontrols][\setSource].(drum);
+
+	};
+}
+
+// play control and triggers
+
+[~k, ~sn, ~h, ~t].do {|drum, i|
+	// reassign [0] to the pbindef for trigger. Figure out some play-pause state deal for the other.
+)
 (
 c = MKtl(\akai, "*lpd8");
-// euclidean beat machine mode, why'd I say quadratic?
-// hits per cycle
-c.elAt(\kn0, 0).action = {
-	arg el;
-	~kl.set(\a, el.value.linlin(0,1, 1, ~kh.get(\a)).round);
-	Pdefn(\k).source = { Pbjorklund2(
-		~kl.get(\a),
-		~kh.get(\a))/~kg.get(\a)};
-};
-// cycle size
-c.elAt(\kn0, 4).action = {
-    arg el;
-    ~kh.set(\a, el.deviceValue + 1);
-	Pdefn(\k).source={ Pbjorklund2(~kl.get(\a), ~kh.get(\a))/~kg.get(\a)};
-};
 
-// and so on
-c.elAt(\kn0, 1).action = {
-    arg el;
-	~sl.set(\a, el.value.linlin(0,1, 1, ~sh.get(\a)).round);
-	Pdefn(\s).source = { Pbjorklund2(~sl.get(\a), ~sh.get(\a))/~sg.get(\a)};
-
-};
-c.elAt(\kn0, 5).action = {
-	arg el;
-	~sh.set(\a, el.deviceValue + 1);
-	Pdefn(\s).source = { Pbjorklund2(~sl.get(\a), ~sh.get(\a))/~sg.get(\a)};
-
-};
-
-c.elAt(\kn0, 2).action = {
-	arg el;
-	~hl.set(\a, el.value.linlin(0,1, 1, ~hh.get(\a)).round);
-	Pdefn(\h).source = {Pbjorklund2(~hl.get(\a), ~hh.get(\a))/~hg.get(\a)};
-
-
-};
-
-c.elAt(\kn0, 6).action = {
-	arg el;
-	~hh.set(\a, el.deviceValue + 1);
-	Pdefn(\h).source = { Pbjorklund2(~hl.get(\a), ~hh.get(\a))/~hg.get(\a)};
-
-};
-
-c.elAt(\kn0, 3).action = {
-	arg el;
-	~tl.set(\a, el.value.linlin(0,1, 1, ~th.get(\a)).round);
-	Pdefn(\t).source = { Pbjorklund2(~tl.get(\a), ~th.get(\a))/~tg.get(\a)};
-
-};
-c.elAt(\kn0, 7).action = {
-	arg el;
-	~th.set(\a, el.deviceValue + 1);
-	Pdefn(\t).source = { Pbjorklund2(~tl.get(\a), ~th.get(\a))/~tg.get(\a)};
-};
 
 
 // glitchers
@@ -65,12 +36,12 @@ c.elAt(\kn0, 7).action = {
 c.elAt(\pad, 0).action = {arg el;
 	(el.type == 'padUp').if {
 		~kg.set(\a, 4);
-		Pdefn(\k).source = { Pbjorklund2(~kl.get(\a), ~kh.get(\a))/~kg.get(\a)}
+		Pdefn(\k).source = { Pbjorklund2(~emcontrols[\kick][\length].get(\a), ~kh.get(\a))/~kg.get(\a)}
 
 	};
 	(el.type == 'pad').if {
 		~kg.set(\a, 4 * el.value * 100);
-		Pdefn(\k).source =  {Pbjorklund2(~kl.get(\a), ~kh.get(\a))/~kg.get(\a)}
+		Pdefn(\k).source =  {Pbjorklund2(~emcontrols[\kick][\length].get(\a), ~kh.get(\a))/~kg.get(\a)}
 
 	}
 
@@ -108,6 +79,36 @@ c.elAt(\pad, 3).action = {arg el;
 		~tg.set(\a, 4 * el.value * 100);
 		Pdefn(\t).source = { Pbjorklund2(~tl.get(\a), ~th.get(\a))/~tg.get(\a)};
 	}
+
+};
+
+
+// delay ctl
+
+c.elAt(\kn1, 0).action = {
+    arg el;
+	~k.set(\speed, el.value);
+
+};
+
+
+c.elAt(\kn1, 1).action = {
+    arg el;
+	~k.set(\feedback, el.value + 0.5);
+
+};
+
+
+c.elAt(\kn1, 2).action = {
+    arg el;
+	~k.set(\pitchspeed, el.value * 10);
+
+};
+
+
+c.elAt(\kn1, 3).action = {
+    arg el;
+	~k.set(\pitchdepth, el.value - 0.5);
 
 };
 )
